@@ -13,8 +13,8 @@ Esta cosa realiza la suma de 8 bits
 
 ## How to test
 
-Explain how to use your project
+Solo coloca 8 leds a la salida para ver el resultado.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+8 leds
