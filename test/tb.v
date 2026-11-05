@@ -19,11 +19,12 @@ module tb ();
   reg clk;
   reg rst_n;
   reg ena;
-   reg [7:0] ui_in = {7'b0, enable};
+  reg [7:0] ui_in = {7'b0, enable};
   reg [7:0] uio_in;
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
+   
 `ifdef GL_TEST
   wire VPWR = 1'b1;
   wire VGND = 1'b0;
