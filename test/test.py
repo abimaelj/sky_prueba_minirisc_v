@@ -31,6 +31,16 @@ async def test_project(dut):
     dut.rst_n.value = 1
     dut.ui_in.value = 1
 
+    await Timer(1, unit="ns")
+
+    dut._log.info(
+    "rst_n=%s, ui_in=%s, enable=%s, salida=%s",
+    dut.rst_n.value,
+    dut.ui_in.value,
+    dut.user_project.enable.value,
+    dut.uo_out.value
+    )
+
     # Verificar cinco incrementos
     for esperado in range(1, 6):
 
