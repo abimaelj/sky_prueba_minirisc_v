@@ -33,10 +33,10 @@ async def test_project(dut):
     #assert int(dut.uo_out.value) == 4
 
     # Deshabilitar contador
-    #dut.ui_in.value = 0
+    dut.ui_in.value = 0
 
-    #await ClockCycles(dut.clk, 3)
-    #await Timer(1, unit="ns")
+    await ClockCycles(dut.clk, 3)
+    await Timer(1, unit="ns")
 
     # Debe conservar el valor
     #assert int(dut.uo_out.value) == 5
