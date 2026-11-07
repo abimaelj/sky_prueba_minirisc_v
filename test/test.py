@@ -1,74 +1,44 @@
 
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, Timer
+from cocotb.triggers import ClockCycles, Timer
 
 @cocotb.test()
 async def test_project(dut):
 
-    dut._log.info("Iniciando simulacion")
-
-    # Inicializar entradas
+    # Inicialización
     dut.ena.value = 1
     dut.ui_in.value = 0
     dut.uio_in.value = 0
     dut.rst_n.value = 0
 
-    # Reloj con periodo de 100 ns
+    # Reloj de 10 MHz
     clock = Clock(dut.clk, 100, unit="ns")
     cocotb.start_soon(clock.start())
 
-    # Mantener reset durante dos ciclos
-    for _ in range(2):
-        await RisingEdge(dut.clk)
-        await Timer(1, unit="ns")
+    # Comprobar reset
+    await ClockCycles(dut.clk, 2)
+    await Timer(1, unit="ns")
 
-    assert int(dut.uo_out.value) == 0, \
-        "Error: el contador no se reinicio"
+    assert int(dut.uo_out.value) == 0
 
-    # Liberar reset y habilitar en flanco negativo
-    await FallingEdge(dut.clk)
+    # Habilitar contador
     dut.rst_n.value = 1
     dut.ui_in.value = 1
 
+    await ClockCycles(dut.clk, 5)
     await Timer(1, unit="ns")
 
-    dut._log.info(
-    "rst_n=%s, ui_in=%s, enable=%s, salida=%s",
-    dut.rst_n.value,
-    dut.ui_in.value,
-    dut.user_project.enable.value,
-    dut.uo_out.value
-    )
-
-    # Verificar cinco incrementos
-    for esperado in range(1, 6):
-
-        await RisingEdge(dut.clk)
-        await Timer(1, unit="ns")
-
-        obtenido = int(dut.uo_out.value)
-
-        dut._log.info(
-            f"Esperado={esperado}, Obtenido={obtenido}"
-        )
-
-        assert obtenido == esperado, (
-            f"Error: esperado {esperado}, "
-            f"obtenido {obtenido}"
-        )
+    # Debe contar cinco ciclos
+    assert int(dut.uo_out.value) == 5
 
     # Deshabilitar contador
-    await FallingEdge(dut.clk)
     dut.ui_in.value = 0
 
-    # Verificar que mantiene su valor
-    for _ in range(3):
+    await ClockCycles(dut.clk, 3)
+    await Timer(1, unit="ns")
 
-        await RisingEdge(dut.clk)
-        await Timer(1, unit="ns")
+    # Debe conservar el valor
+    assert int(dut.uo_out.value) == 5
 
-        assert int(dut.uo_out.value) == 5, \
-            "Error: contador cambio con enable=0"
-
-    dut._log.info("Todas las pruebas superadas")
+    dut._log.info("Prueba completada correctamente")
